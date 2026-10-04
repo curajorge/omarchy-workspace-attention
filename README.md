@@ -2,7 +2,7 @@
 
 An Omarchy bar widget that highlights workspaces when a window requests attention, without automatically switching focus.
 
-Urgent workspaces show an **amber label and a dot**. Hover for an attention hint; click to switch to the workspace. The indicator clears when Hyprland clears urgency, normally when you focus the requesting window. Switching to its workspace alone may not clear it if another window receives focus.
+Urgent workspaces show an **amber label and a dot**. Hover for an attention hint; click to switch to the workspace. Quickshell clears workspace urgency when that workspace gains focus.
 
 ## Requirements
 
@@ -73,17 +73,23 @@ Manual checks before releasing:
 
 From a terminal in your graphical session, run `python3 test-attention.py`.
 A temporary blank test window opens. Switch to another workspace within 10 seconds.
-The helper then sets the X11 urgency hint: the original workspace should turn amber
+The helper then sends an X11 activation request: the original workspace should turn amber
 and show a dot while your current workspace keeps focus. Return and focus the test
 window to clear the indicator. It closes automatically after another 60 seconds;
 Ctrl+C in the launching terminal also stops it. Let the helper close its own window.
 
-This optional manual helper needs Python 3, libX11, and XWayland (`DISPLAY`). It
+This optional manual helper needs Python 3, libX11, Hyprland's `hyprctl`, and XWayland (`DISPLAY`). It
+requires `misc.focus_on_activate=false` and checks this before creating a window.
+Hyprland converts the rejected activation request into an urgency event; the
+legacy X11 urgency hint alone did not trigger this on our tested Hyprland build. It
 tests an actual compositor urgency event, not a simulated widget color. Native
-Wayland applications should also be checked separately. The helper's syntax has
-been validated; its interactive pass/fail result must be observed on your desktop.
+Wayland applications should also be checked separately.
 
-Manifest validation and runtime loading have been checked. End-to-end application urgency and the full multi-monitor matrix are not yet verified; this initial release is `0.1.0`.
+Manifest validation, QML linting, and an end-to-end XWayland activation test have passed: the amber marker and dot appeared, and focusing the test window cleared urgency. Native Wayland applications and the full multi-monitor matrix are not yet verified.
+
+If a newly enabled or edited widget looks unchanged, try `omarchy restart shell`.
+During initial testing, the shell reported the plugin enabled but retained an older
+widget until restarted. This briefly restarts the bar and shell surfaces, not your applications.
 
 Please include Omarchy, Hyprland, and Quickshell versions, bar orientation, and the application involved when reporting an issue. Avoid including private window titles or full desktop screenshots.
 

@@ -69,6 +69,20 @@ Manual checks before releasing:
 4. Check multiple urgent windows, horizontal/vertical bars, and multiple monitors.
 5. Disable, re-enable, and remove the plugin; confirm the original widget can be restored.
 
+### Controlled attention test
+
+From a terminal in your graphical session, run `python3 test-attention.py`.
+A temporary blank test window opens. Switch to another workspace within 10 seconds.
+The helper then sets the X11 urgency hint: the original workspace should turn amber
+and show a dot while your current workspace keeps focus. Return and focus the test
+window to clear the indicator. It closes automatically after another 60 seconds;
+Ctrl+C in the launching terminal also stops it. Let the helper close its own window.
+
+This optional manual helper needs Python 3, libX11, and XWayland (`DISPLAY`). It
+tests an actual compositor urgency event, not a simulated widget color. Native
+Wayland applications should also be checked separately. The helper's syntax has
+been validated; its interactive pass/fail result must be observed on your desktop.
+
 Manifest validation and runtime loading have been checked. End-to-end application urgency and the full multi-monitor matrix are not yet verified; this initial release is `0.1.0`.
 
 Please include Omarchy, Hyprland, and Quickshell versions, bar orientation, and the application involved when reporting an issue. Avoid including private window titles or full desktop screenshots.
